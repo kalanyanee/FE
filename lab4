@@ -1,0 +1,43 @@
+import  numpy as np
+import  pandas as pd
+df = pd.DataFrame({
+    "Data": pd.date_range(start="2021-10-01",periods=10,freq="D"),
+    "Item": 1014,
+    "Measur_1": np.random.randint(1,10,size=10),
+    "Measur_2": np.random.random(10).round(2),
+    "Measur_3": np.random.random(10).round(2),
+    "Measur_4": np.random.randn(10)
+})
+#print(df.head())
+df.loc[[2,9],"Item"] = np.nan
+df.loc[[2,7,9],"Measur_1"] = np.nan
+df.loc[[2,3],"Measur_2"] = np.nan
+df.loc[[2],"Measur_3"] = np.nan
+df.loc[:6,"Measur_4"] = np.nan
+#print(df)
+df = df.astype({
+    "Item": pd.Int64Dtype(),
+    "Measur_1": pd.Int64Dtype()
+})
+#print(df)
+dr=df.dropna()
+#print(dr)
+dc=df.dropna(axis=1)
+#print(dc)
+dt=df.dropna(thresh=4)
+#print(dt)
+db=df.dropna(subset=["Measur_2","Measur_3"])
+#print(db)
+values = {"Item": 1024,"Measure_1":0}
+dn=df.fillna(value=values)
+#print(dn)
+dm=df.isnull().sum()
+#print(dm)
+df['MaxSpeed'] = np.random.randint(50, 150, size=10)
+df.loc[[2, 5, 8], 'MaxSpeed'] = np.nan
+from sklearn.impute import SimpleImputer
+df_mean = df.copy()
+mean_imputer = SimpleImputer(strategy='mean')
+df_mean['MaxSpeed'] = mean_imputer.fit_transform(df_mean['MaxSpeed'].values.reshape(-1,1))
+print(df_mean)
+
