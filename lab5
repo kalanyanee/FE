@@ -1,0 +1,56 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Properties DataFrame
+#price = [115000, 109000, 125000, 50230, 117000, 110500, 123000, 197000, 109000, 114500]
+#properties = ["property1", "property2", "property3", "property4", "property5", "property6", "property7", "property8", "property9", "property10"]
+#df = pd.DataFrame({'Properties': properties, 'Market_price': price})
+#print(df)
+#print("**************************************************************************************************************")
+#
+## Patients DataFrame
+#beats = [64, 79, 23, 80, 99, 78, 56, 45, 72, 156]
+#patients = ["patient1", "patient2", "patient3", "patient4", "patient5", "patient6", "patient7", "patient8", "patient9", "patient10"]
+#df1 = pd.DataFrame({'Patients': patients, 'Heart_rate': beats})
+#print(df1)
+#print("**************************************************************************************************************")
+#
+#df2 = df[(df['Market_price']< 100000) | (df['Market_price']>150000)]
+#print(df2)
+#print("**************************************************************************************************************")
+#
+#df3 = df1[(df1['Heart_rate'] < 60) | (df1['Heart_rate'] > 100)]
+#print(df3)
+#print("**************************************************************************************************************")
+
+from sklearn.datasets import fetch_california_housing
+import pandas as pd
+california_housing = fetch_california_housing(as_frame=True)
+df = california_housing.data
+
+# Box plot for Market_price column
+df.plot(kind="box", subplots=True, layout=(3,3), figsize=(10,10))
+
+
+import plotly.express as px
+fig = px.histogram(df, x="MedInc", marginal="box")
+fig.show()
+
+import seaborn as sns
+iris = sns.load_dataset("iris")
+ax = sns.boxplot(data=iris, palette="Set2")
+
+
+plt.scatter(df.AveRooms, df.AveBedrms, alpha=0.5)
+plt.xlabel('AveRooms')
+plt.ylabel('AveBedrms')
+plt.title('AveBedrms - AveRooms')
+plt.show()
+
+plt.scatter(df.HouseAge, df.Population, alpha=0.5)
+plt.xlabel('HouseAge')
+plt.ylabel('Population')
+plt.title('Population - HouseAge')
+plt.show()
+
+
