@@ -1,0 +1,54 @@
+#1 นำเข้า library ที่ต้องใช้
+import pandas as pd
+
+#2 อ่านข้อมูลจากไฟล์ CSV
+df = pd.read_csv('fe_m67_car_prices.csv')
+
+#3 แสดง DataFrame
+print(df)
+print("--------------------------------------------------")
+
+#4 ตรวจสอบจำนวนข้อมูลที่ขาดหายในแต่ละคอลัมน์
+missing_data = df.isnull().sum()
+print(missing_data)
+print("--------------------------------------------------")
+
+#5 ลบแถวที่มีข้อมูลหาย
+drop_missing_data = df.dropna()
+print(drop_missing_data)
+print("--------------------------------------------------")
+
+#6 ทำการ normalization ตัวแปร 'sellingprice'
+min_value = df['sellingprice'].min()
+max_value = df['sellingprice'].max()
+df['Normalized_sellingprice'] = (df['sellingprice'] - min_value) / (max_value - min_value)
+print(df[['sellingprice', 'Normalized_sellingprice']])
+print("--------------------------------------------------")
+
+#7 เลือกเฉพาะคอลัมน์ที่เป็นตัวเลข
+numeric_df = df.select_dtypes(include=['number'])
+
+#7.1 คำนวณ Q1, Q3, และ IQR สำหรับคอลัมน์ที่เป็นตัวเลข
+Q1 = numeric_df.quantile(0.25)
+Q3 = numeric_df.quantile(0.75)
+IQR = Q3 - Q1
+
+# Define a function to remove outliers
+def remove_outliers(column):
+    lower_bound = Q1[column] - 1.5 * IQR[column]
+    upper_bound = Q3[column] + 1.5 * IQR[column]
+    return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+
+# ลบค่า outlier สำหรับคอลัมน์ 'sellingprice'
+df= remove_outliers('sellingprice')
+print(df)
+#7.2 แสดง box plot
+import matplotlib.pyplot as plt
+columns_to_plot = ['sellingprice', 'mmr', 'Normalized_sellingprice']
+
+plt.figure(figsize=(10, 6))
+df.boxplot(column=columns_to_plot)
+plt.title('Box Plot of Features')
+plt.xlabel('Features')
+plt.ylabel('Values')
+plt.show()
