@@ -1,0 +1,22 @@
+from pandas import read_csv
+from pandas import DataFrame
+from pandas.plotting import scatter_matrix
+from sklearn.preprocessing import KBinsDiscretizer
+from matplotlib import pyplot
+# load dataset
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/sonar.csv"
+dataset = read_csv(url, header=None)
+print(dataset)
+print("-------------")
+# retrieve just the numeric input values
+data = dataset.values[:, :-1]
+# perform a uniform discretization transform of the dataset
+trans = KBinsDiscretizer(n_bins=10, encode='ordinal', strategy='uniform')
+
+data = trans.fit_transform(data)
+print(data)
+# convert the array back to a dataframe
+dataset = DataFrame(data)
+# histograms of the variables
+dataset.hist()
+pyplot.show()
