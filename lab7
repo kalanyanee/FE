@@ -1,0 +1,97 @@
+import numpy as np
+import pandas as pd
+X = pd.DataFrame(np.array(['M','O-','medium',
+                            'M','O-','high',
+                            'F','O+','high',
+                            'F','AB','low',
+                            'F','B+',np.nan,]).reshape((5,3)))
+X.columns = ['sex','blood_type','edu_level']
+#print(X)
+
+#OrdinalEncoder
+from sklearn.preprocessing import OrdinalEncoder
+# กำหนดชื่อคอลัมน์ใหม่สำหรับข้อมูลที่ถูกเข้ารหัส
+new_edu_level = 'edu_level'
+# เริ่มต้น encoder
+encoder = OrdinalEncoder()
+X[new_edu_level] = encoder.fit_transform(X.edu_level.values.reshape(-1,1))
+#print(X)
+cat = pd.Categorical(X.edu_level,
+                    categories=['missing', 'low',
+                                'medium', 'high'],
+                    ordered=True)
+cat = cat.fillna('missing')
+#print(cat)
+labels, unique = pd.factorize(cat, sort=True)
+X.edu_level = labels
+#print(X)
+
+#OneHot Encode
+from sklearn.preprocessing import OneHotEncoder
+onehot = OneHotEncoder(dtype=np.int64, sparse_output=True)
+nominals = pd.DataFrame(onehot.fit_transform(X[['sex', 'blood_type']])
+                        .toarray(),
+                        columns=['F', 'M', 'AB', 'B+','O+', 'O-'])
+nominals['edu_level'] = X.edu_level
+#print(nominals)
+
+import seaborn as sns
+import pandas as pd
+import numpy as np
+
+# โหลดข้อมูล iris dataset
+data = sns.load_dataset('iris')
+print('Original Dataset')
+#print(data.head())
+
+# Min-Max Normalization
+df = data.drop('species', axis=1)
+df_norm = (df - df.min()) / (df.max() - df.min())
+
+# รวม df_norm กับคอลัมน์ 'species'
+df_norm = pd.concat([df_norm, data['species']], axis=1)
+
+print("Scaled Dataset Using Pandas")
+print(df_norm.head())
+print('********************************************')
+
+import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
+import pandas as pd
+
+data = sns.load_dataset('iris')
+print('Original Dataset')
+data.head()
+
+scaler = MinMaxScaler()
+
+df_scaled = scaler.fit_transform(df.to_numpy())
+df_scaled = pd.DataFrame(df_scaled, columns=[
+'sepal_length', 'sepal_width', 'petal_length', 'petal_width'])
+
+#print("Scaled Dataset Using MinMaxScaler")
+print(df_scaled.head())
+print('********************************************')
+
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+import seaborn as sns
+data = sns.load_dataset('iris')
+print('Original Dataset')
+data.head()
+
+std_scaler = StandardScaler()
+
+df_scaled = std_scaler.fit_transform(df.to_numpy())
+df_scaled = pd.DataFrame(df_scaled, columns=[
+'sepal_length','sepal_width','petal_length','petal_width'])
+
+print("Scaled Dataset Using StandardScaler")
+print(df_scaled.head())
+
+
+
+
+
+
+
