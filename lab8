@@ -1,0 +1,136 @@
+# Import the Breast Cancer dataset from scikit-learn
+#from sklearn.datasets import load_breast_cancer
+#import pandas as pd
+#import matplotlib.pyplot as plt
+#import seaborn as sns
+#
+# Load the Breast Cancer dataset
+#data = load_breast_cancer()
+#
+# Print out the description of the dataset
+#print(data.DESCR)
+#
+# Create dataframe from dataset
+#df = pd.DataFrame(data.data, columns=data.feature_names)
+#
+# Define a target variable
+#df['target'] = data.target
+#
+# Create an interest subset of features
+#features = ['mean smoothness', 'mean compactness', 'mean concavity', 'mean concave points', 'mean symmetry']
+#
+# New feature with the sum of the selected variables
+#df['added_feature'] = df[features].sum(axis=1)
+#
+## New feature with the product of the selected features
+#df['prod_feature'] = df[features].prod(axis=1)
+#
+# The mean value of the selected variables
+#df['mean_features'] = df[features].mean(axis=1)
+#
+# The standard deviation of the selected features
+#df['std_features'] = df[features].std(axis=1)
+#
+# The maximum value across the selected variables
+#df['max_features'] = df[features].max(axis=1)
+#
+# The minimum value across the selected features
+#df['min_features'] = df[features].min(axis=1)
+#
+# Create an interest subset of features
+#features = ['mean smoothness', 'mean compactness', 'mean concavity', 'mean concave points', 'mean symmetry']
+#
+#df_t = df[features].agg(['sum', 'prod', 'mean', 'std', 'max', 'min'], axis='columns')
+## Visualize the added feature
+#sns.violinplot(x='target', y='added_feature', data=df)
+#plt.title('Added Features')
+#plt.show()
+
+##import the Breast Cancer dataset from scikit-learn
+#from sklearn.datasets import load_breast_cancer
+## load the Breast Cancer dataset
+#data = load_breast_cancer ()
+## print out the description of the dataset
+#print(data.DESCR)
+#import pandas as pd
+##create dataframe from dataset
+#df = pd.DataFrame(data.data,
+#columns=data.feature_names)
+##define a target variable.
+#df['target'] = data.target
+##the difference between two features
+#df['diff1']=df['worst compactness'].sub(df['mean compactness'])
+##the same calculation
+#df['diff2']=df['worst compactness']-df['mean compactness']
+##the ratio between two variables
+#df['quotient1'] = df['worst radius'].div(df['mean radius'])
+##the same calculation
+#df['quotient2'] = df['worst radius']/df['mean radius']
+##(list1)
+#features = ['mean smoothness','mean compactness','mean concavity','mean concave points','mean symmetry']
+##(list2)
+#worst_f = ['worst smoothness','worst compactness', 'worst concavity', 'worst concave points', 'worst symmetry']
+##sum of the features
+#df['worst'] = df[worst_f].sum(axis=1)
+##ratio between each one of the features in list1 and df[‘worst’]
+#df[features]=df[features].div(df['worst'],axis=0)
+
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PolynomialFeatures
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the Breast Cancer dataset
+data = load_breast_cancer()
+print(data.DESCR)
+# Create DataFrame from dataset
+df = pd.DataFrame(data.data, columns=data.feature_names)
+
+# Define the target variable
+df['target'] = data.target
+
+# Separate features (X) and target (y)
+dataX = df.drop(columns=['target'])
+dataY = df['target']
+
+# Separate the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(dataX, dataY, test_size=0.3, random_state=0)
+
+print(X_train.shape, X_test.shape)
+print(y_train.shape, y_test.shape)
+
+# Set up the polynomial expansion transformer
+poly = PolynomialFeatures(degree=3, interaction_only=False, include_bias=False)
+
+# Fit the transformer to the train set
+poly.fit(X_train)
+
+# Create the new polynomial features in a new dataset
+train_t = poly.transform(X_train)
+test_t = poly.transform(X_test)
+
+# Examine the names of the features
+feature_names = poly.get_feature_names_out(input_features=dataX.columns)
+
+# Put the array with the polynomial features in a DataFrame
+test_t = pd.DataFrame(test_t, columns=feature_names)
+print(test_t.shape)
+
+# Function to plot features against the target variable
+def plot_features(df, target):
+    nb_rows = 5
+    nb_cols = 4
+    fig, axs = plt.subplots(nb_rows, nb_cols, figsize=(12, 12))
+    plt.subplots_adjust(wspace=None, hspace=0.4)
+    n = 0
+    for i in range(nb_rows):
+        for j in range(nb_cols):
+            if n < df.shape[1]:  # Ensure n does not exceed the number of columns
+                axs[i, j].scatter(df[df.columns[n]], target)
+                axs[i, j].set_title(df.columns[n])
+                n += 1
+    plt.show()
+
+# Call the plot function
+plot_features(test_t, y_test)
